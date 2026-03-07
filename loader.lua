@@ -1,4 +1,9 @@
-ocal sg = Instance.new("ScreenGui", game:GetService("CoreGui"))
+local ServiceID = "ae49d069-3597-44ef-9e4e-26e87db30638" 
+local SCRIPT_PRINCIPAL = "https://raw.githubusercontent.com/meliodasa117/Sheldon/main/SheldonHub%20aimbot.lua"
+
+local PandaAuth = loadstring(game:HttpGet("https://api-v2.pandadevelopment.net/v2/lib/source.lua"))()
+
+local sg = Instance.new("ScreenGui", game:GetService("CoreGui"))
 local f = Instance.new("Frame", sg)
 f.Size = UDim2.new(0, 280, 0, 180)
 f.Position = UDim2.new(0.5, -140, 0.5, -90)
