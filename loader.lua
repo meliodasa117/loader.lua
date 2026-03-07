@@ -1,7 +1,7 @@
 -- LINKS DO SEU GITHUB
 local LINK_DA_KEY = "https://raw.githubusercontent.com/meliodasa117/key.text/refs/heads/main/key"
 local LINK_DO_SCRIPT_PRINCIPAL = "https://raw.githubusercontent.com/meliodasa117/Sheldon/refs/heads/main/SheldonHub%20aimbot.lua"
-local LINK_LINKVERTISE = "https://link-target.net/4087696/VfYyTZXZSnom"
+local LINK_LINKVERTISE = https://link-hub.net/4087696/JFueiutK4uI0
 
 -- Busca a chave atualizada no seu arquivo do GitHub
 local sucesso, CHAVE_ATUAL = pcall(function() return game:HttpGet(LINK_DA_KEY) end)
