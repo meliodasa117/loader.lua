@@ -1,69 +1,97 @@
--- LINKS DO SEU GITHUB
-local LINK_DA_KEY = "https://raw.githubusercontent.com/meliodasa117/key.text/refs/heads/main/key"
+--[[ 
+    SHELDON HUB - LOADER OFICIAL
+    Sistema de Key Dinâmica via GitHub
+]]
+
+-- CONFIGURAÇÃO DE LINKS (OS QUE VOCÊ ENVIOU)
+local LINK_DA_KEY = "https://raw.githubusercontent.com/meliodasa117/keyy.text/refs/heads/main/key%20sheldon%20hub%20pro"
 local LINK_DO_SCRIPT_PRINCIPAL = "https://raw.githubusercontent.com/meliodasa117/Sheldon/refs/heads/main/SheldonHub%20aimbot.lua"
-local LINK_LINKVERTISE = https://link-hub.net/4087696/JFueiutK4uI0
+local LINK_LINKVERTISE = "https://link-hub.net/4087696/tMviw0oOY4RC"
 
--- Busca a chave atualizada no seu arquivo do GitHub
-local sucesso, CHAVE_ATUAL = pcall(function() return game:HttpGet(LINK_DA_KEY) end)
-
-if not sucesso then
-    warn("Erro ao carregar a Key. Verifique sua internet.")
-    return
+-- Função para baixar a Key com segurança
+local function obterKeyServidor()
+    local sucesso, conteudo = pcall(function() 
+        return game:HttpGet(LINK_DA_KEY) 
+    end)
+    if sucesso and conteudo then
+        return conteudo:gsub("%s+", "") -- Remove espaços e quebras de linha
+    end
+    return nil
 end
 
--- INTERFACE (GUI) - Otimizada para Celular e PC
+local CHAVE_SERVIDOR = obterKeyServidor()
+
+-- INTERFACE GRÁFICA (GUI)
 local ScreenGui = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame")
 local TextBox = Instance.new("TextBox")
 local VerifyBtn = Instance.new("TextButton")
 local GetKeyBtn = Instance.new("TextButton")
+local UICorner = Instance.new("UICorner")
 
-ScreenGui.Parent = game.CoreGui
+-- Configuração da Janela
+ScreenGui.Parent = game:GetService("CoreGui")
+ScreenGui.DisplayOrder = 999
+
 Frame.Parent = ScreenGui
-Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 Frame.Size = UDim2.new(0, 260, 0, 160)
 Frame.Position = UDim2.new(0.5, -130, 0.5, -80)
 Frame.Active = true
-Frame.Draggable = true -- Permite arrastar no PC
+Frame.Draggable = true
 
--- Campo de Texto
+local FrameCorner = UICorner:Clone()
+FrameCorner.Parent = Frame
+
+-- Campo de Texto (Onde o usuário cola a key)
 TextBox.Parent = Frame
 TextBox.Size = UDim2.new(0, 220, 0, 35)
 TextBox.Position = UDim2.new(0, 20, 0, 20)
-TextBox.PlaceholderText = "Digite a Key aqui..."
+TextBox.PlaceholderText = "Cole a Key aqui..."
 TextBox.Text = ""
+TextBox.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+UICorner:Clone().Parent = TextBox
 
 -- Botão Verificar
 VerifyBtn.Parent = Frame
 VerifyBtn.Text = "VERIFICAR"
 VerifyBtn.Size = UDim2.new(0, 220, 0, 35)
 VerifyBtn.Position = UDim2.new(0, 20, 0, 65)
-VerifyBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+VerifyBtn.BackgroundColor3 = Color3.fromRGB(0, 160, 0)
+VerifyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+UICorner:Clone().Parent = VerifyBtn
 
--- Botão Linkvertise
+-- Botão Get Key
 GetKeyBtn.Parent = Frame
-GetKeyBtn.Text = "PEGAR KEY (LINKVERTISE)"
+GetKeyBtn.Text = "PEGAR KEY"
 GetKeyBtn.Size = UDim2.new(0, 220, 0, 35)
 GetKeyBtn.Position = UDim2.new(0, 20, 0, 110)
-GetKeyBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+GetKeyBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
+GetKeyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+UICorner:Clone().Parent = GetKeyBtn
 
--- Lógica dos Botões
+-- LÓGICA DOS BOTÕES
 GetKeyBtn.MouseButton1Click:Connect(function()
-    setclipboard(LINK_LINKVERTISE)
-    print("Link copiado para a área de transferência!")
+    if setclipboard then
+        setclipboard(LINK_LINKVERTISE)
+        print("Link copiado!")
+    else
+        warn("Executor não suporta setclipboard.")
+    end
 end)
 
 VerifyBtn.MouseButton1Click:Connect(function()
-    -- Compara e remove espaços/quebras de linha invisíveis
-    local key_limpa = CHAVE_ATUAL:gsub("%s+", "")
+    local key_digitada = TextBox.Text:gsub("%s+", "")
     
-    if TextBox.Text == key_limpa then
-        print("Acesso Liberado! Carregando Sheldon Hub...")
+    if key_digitada == CHAVE_SERVIDOR then
+        print("Acesso Liberado!")
         ScreenGui:Destroy()
-        -- Executa o seu script principal que remove cliques de mouse para mobile
+        -- Carrega o Script de Aimbot Mobile/PC
         loadstring(game:HttpGet(LINK_DO_SCRIPT_PRINCIPAL))()
     else
         TextBox.Text = ""
         TextBox.PlaceholderText = "KEY INCORRETA!"
+        TextBox.PlaceholderColor3 = Color3.fromRGB(255, 0, 0)
     end
 end)
