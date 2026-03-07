@@ -1,4 +1,4 @@
-local sg = Instance.new("ScreenGui", game:GetService("CoreGui"))
+ocal sg = Instance.new("ScreenGui", game:GetService("CoreGui"))
 local f = Instance.new("Frame", sg)
 f.Size = UDim2.new(0, 280, 0, 180)
 f.Position = UDim2.new(0.5, -140, 0.5, -90)
@@ -24,19 +24,21 @@ b2.Position = UDim2.new(0, 20, 0, 100)
 b2.Text = "COPIAR LINK DA KEY"
 b2.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
 
--- NOVO: Mostra o link caso o "Copiar" falhe
+-- Caixa de texto para exibir o link se o clipboard falhar
 local label = Instance.new("TextBox", f)
-label.Size = UDim2.new(0, 240, 0, 25)
+label.Size = UDim2.new(0, 240, 0, 30)
 label.Position = UDim2.new(0, 20, 0, 140)
-label.Text = "Link aparecera aqui"
+label.Text = "O link aparecera aqui"
 label.TextScaled = true
 label.ClearTextOnFocus = false
 label.ReadOnly = true
+label.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+label.TextColor3 = Color3.new(1, 1, 1)
 
 b2.MouseButton1Click:Connect(function()
     local link = PandaAuth:GetLink(ServiceID)
     setclipboard(link)
-    label.Text = link -- Mostra o link no visor
+    label.Text = link -- Mostra o link no visor para voce copiar manualmente
     b2.Text = "COPIADO!"
     task.wait(2)
     b2.Text = "COPIAR LINK DA KEY"
