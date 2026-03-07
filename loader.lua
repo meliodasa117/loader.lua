@@ -50,12 +50,3 @@ b1.MouseButton1Click:Connect(function()
         t.Text = "KEY INVALIDA"
     end
 end)
-﻿
-Dyno 
-APP
-Dyno
-#3861
- 
-The Discord bot to make server management and moderation easy. Follow your favorite streamers, run giveaways, and more!
-
-https://dyno.gg/
