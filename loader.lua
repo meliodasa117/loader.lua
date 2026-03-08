@@ -1,54 +1,85 @@
--- SHELDON HUB | LOADER FINAL
+-- CONFIGURACOES DE DIVULGACAO
 local ServiceID = "ae49d069-3597-44ef-9e4e-26e87db30638" 
 local SCRIPT_PRINCIPAL = "https://raw.githubusercontent.com/meliodasa117/Sheldon/main/SheldonHub%20aimbot.lua"
 
--- Carregamento da API
-local PandaAuth = loadstring(game:HttpGet("https://api-v2.pandadevelopment.net/v2/lib/source.lua"))()
+-- BIBLIOTECA PANDA AUTH (COM TRATAMENTO DE ERRO)
+local success, PandaAuth = pcall(function()
+    return loadstring(game:HttpGet("https://api-v2.pandadevelopment.net/v2/lib/source.lua"))()
+end)
 
--- Interface
+-- INTERFACE DO LOADER
 local sg = Instance.new("ScreenGui", game:GetService("CoreGui"))
-local main = Instance.new("Frame", sg)
-main.Size = UDim2.new(0, 320, 0, 190)
-main.Position = UDim2.new(0.5, -160, 0.5, -95)
-main.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-Instance.new("UICorner", main)
+local f = Instance.new("Frame", sg)
+f.Size = UDim2.new(0, 300, 0, 180)
+f.Position = UDim2.new(0.5, -150, 0.5, -90)
+f.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+Instance.new("UICorner", f)
 
-local title = Instance.new("TextLabel", main)
-title.Size = UDim2.new(1, 0, 0, 45)
+local title = Instance.new("TextLabel", f)
+title.Size = UDim2.new(1, 0, 0, 40)
 title.Text = "SHELDON HUB | SISTEMA DE KEY"
 title.TextColor3 = Color3.new(1, 1, 1)
-title.Font = Enum.Font.GothamBold
 title.BackgroundTransparency = 1
 
-local btnGet = Instance.new("TextButton", main)
-btnGet.Size = UDim2.new(0, 280, 0, 45)
-btnGet.Position = UDim2.new(0, 20, 0, 55)
-btnGet.Text = "PEGAR KEY (LINKVERTISE)"
-btnGet.BackgroundColor3 = Color3.fromRGB(0, 110, 255)
-btnGet.TextColor3 = Color3.new(1, 1, 1)
-Instance.new("UICorner", btnGet)
+local b_copy = Instance.new("TextButton", f)
+b_copy.Size = UDim2.new(0, 260, 0, 40)
+b_copy.Position = UDim2.new(0, 20, 0, 50)
+b_copy.Text = "PEGAR KEY (LINKVERTISE)"
+b_copy.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
+b_copy.TextColor3 = Color3.new(1, 1, 1)
+Instance.new("UICorner", b_copy)
 
-local input = Instance.new("TextBox", main)
-input.Size = UDim2.new(0, 185, 0, 40)
-input.Position = UDim2.new(0, 20, 0, 115)
-input.PlaceholderText = "Cole a Key..."
-input.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-input.TextColor3 = Color3.new(1, 1, 1)
-Instance.new("UICorner", input)
+local t = Instance.new("TextBox", f)
+t.Size = UDim2.new(0, 170, 0, 40)
+t.Position = UDim2.new(0, 20, 0, 110)
+t.PlaceholderText = "Cole a Key..."
+t.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+t.TextColor3 = Color3.new(1, 1, 1)
 
-local btnVerify = Instance.new("TextButton", main)
-btnVerify.Size = UDim2.new(0, 85, 0, 40)
-btnVerify.Position = UDim2.new(0, 215, 0, 115)
-btnVerify.Text = "ENTRAR"
-btnVerify.BackgroundColor3 = Color3.fromRGB(0, 170, 80)
-btnVerify.TextColor3 = Color3.new(1, 1, 1)
-Instance.new("UICorner", btnVerify)
+local b_verify = Instance.new("TextButton", f)
+b_verify.Size = UDim2.new(0, 80, 0, 40)
+b_verify.Position = UDim2.new(0, 200, 0, 110)
+b_verify.Text = "ENTRAR"
+b_verify.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+b_verify.TextColor3 = Color3.new(1, 1, 1) -- Corrigido para aparecer o texto
+Instance.new("UICorner", b_verify)
 
--- Funções
-btnGet.MouseButton1Click:Connect(function()
+-- LOGICA DO BOTAO COPIAR
+b_copy.MouseButton1Click:Connect(function()
     local hwid = game:GetService("RbxAnalyticsService"):GetClientId()
-    setclipboard("https://pandadevelopment.net/getkey/sheldonhub?hwid=" .. hwid)
-    btnGet.Text = "LINK COPIADO!"
+    local linkFinal = "https://pandadevelopment.net/getkey/sheldonhub?hwid=" .. hwid
+    setclipboard(linkFinal)
+    b_copy.Text = "LINK COPIADO!"
     task.wait(2)
-    btnGet.Text = "PEGAR KEY (LINKVERTISE)"
+    b_copy.Text = "PEGAR KEY (LINKVERTISE)"
+end)
+
+-- VERIFICACAO CORRIGIDA
+b_verify.MouseButton1Click:Connect(function()
+    -- LIMPEZA PROFUNDA: Remove espaços, quebras de linha e caracteres de controle
+    local inputKey = t.Text:gsub("%s+", ""):gsub("[%c%p%s]", "")
+
+    if not success or not PandaAuth then
+        t.Text = ""
+        t.PlaceholderText = "ERRO NA API!"
+        return
+    end
+
+    b_verify.Text = "Aguarde..."
+
+    -- Validação com o PandaAuth
+    local isValid = PandaAuth:ValidateKey(ServiceID, inputKey)
+
+    if isValid then
+        sg:Destroy()
+        -- Carrega o seu Aimbot principal
+        loadstring(game:HttpGet(SCRIPT_PRINCIPAL))()
+    else
+        t.Text = ""
+        t.PlaceholderText = "KEY INVALIDA!"
+        b_verify.Text = "ENTRAR"
+        b_verify.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+        task.wait(1)
+        b_verify.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+    end
 end)
