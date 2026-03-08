@@ -1,56 +1,84 @@
--- CONFIGURACOES
+-- CONFIGURAÇÕES PRINCIPAIS
 local ServiceID = "ae49d069-3597-44ef-9e4e-26e87db30638" 
 local SCRIPT_PRINCIPAL = "https://raw.githubusercontent.com/meliodasa117/Sheldon/main/SheldonHub%20aimbot.lua"
 
--- CARREGAMENTO SEGURO DA LIB
-local success, PandaAuth = pcall(function()
-    return loadstring(game:HttpGet("https://api-v2.pandadevelopment.net/v2/lib/source.lua"))()
+-- CARREGAMENTO DA BIBLIOTECA PANDA AUTH
+local PandaAuth = loadstring(game:HttpGet("https://api-v2.pandadevelopment.net/v2/lib/source.lua"))()
+
+-- CRIAÇÃO DA INTERFACE (SCREEN GUI)
+local sg = Instance.new("ScreenGui", game:GetService("CoreGui"))
+sg.Name = "SheldonLoader"
+
+local main = Instance.new("Frame", sg)
+main.Size = UDim2.new(0, 320, 0, 190)
+main.Position = UDim2.new(0.5, -160, 0.5, -95)
+main.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+main.BorderSizePixel = 0
+Instance.new("UICorner", main).CornerRadius = UDim.new(0, 10)
+
+-- TÍTULO
+local title = Instance.new("TextLabel", main)
+title.Size = UDim2.new(1, 0, 0, 45)
+title.Text = "SHELDON HUB | SISTEMA DE KEY"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+title.BackgroundTransparency = 1
+
+-- BOTÃO PARA PEGAR KEY
+local btnGet = Instance.new("TextButton", main)
+btnGet.Size = UDim2.new(0, 280, 0, 45)
+btnGet.Position = UDim2.new(0, 20, 0, 55)
+btnGet.Text = "PEGAR KEY (LINKVERTISE)"
+btnGet.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+btnGet.TextColor3 = Color3.new(1, 1, 1)
+btnGet.Font = Enum.Font.GothamBold
+Instance.new("UICorner", btnGet)
+
+-- CAIXA DE TEXTO PARA A KEY
+local input = Instance.new("TextBox", main)
+input.Size = UDim2.new(0, 190, 0, 40)
+input.Position = UDim2.new(0, 20, 0, 115)
+input.PlaceholderText = "Cole a Key aqui..."
+input.Text = ""
+input.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+input.TextColor3 = Color3.new(1, 1, 1)
+Instance.new("UICorner", input)
+
+-- BOTÃO PARA ENTRAR/VERIFICAR
+local btnEnter = Instance.new("TextButton", main)
+btnEnter.Size = UDim2.new(0, 80, 0, 40)
+btnEnter.Position = UDim2.new(0, 220, 0, 115)
+btnEnter.Text = "ENTRAR"
+btnEnter.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
+btnEnter.TextColor3 = Color3.new(1, 1, 1)
+btnEnter.Font = Enum.Font.GothamBold
+Instance.new("UICorner", btnEnter)
+
+-- LOGICA DO BOTÃO "PEGAR KEY" (USANDO O HWID DO SEU PAINEL)
+btnGet.MouseButton1Click:Connect(function()
+    local hwid = game:GetService("RbxAnalyticsService"):GetClientId()
+    local link = "https://pandadevelopment.net/getkey/sheldonhub?hwid=" .. hwid
+    setclipboard(link)
+    btnGet.Text = "LINK COPIADO!"
+    task.wait(2)
+    btnGet.Text = "PEGAR KEY (LINKVERTISE)"
 end)
 
--- SE A LIB FALHAR, O USUARIO PRECISA SABER
-if not success or not PandaAuth then
-    warn("FALHA AO CONECTAR NA API PANDA AUTH")
-end
-
--- [INTERFACE MANTIDA IGUAL A SUA]
-local sg = Instance.new("ScreenGui", game:GetService("CoreGui"))
-local f = Instance.new("Frame", sg)
-f.Size = UDim2.new(0, 300, 0, 180)
-f.Position = UDim2.new(0.5, -150, 0.5, -90)
-f.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-
-local t = Instance.new("TextBox", f)
-t.Size = UDim2.new(0, 190, 0, 40)
-t.Position = UDim2.new(0, 20, 0, 110)
-t.PlaceholderText = "Cole a Key..."
-t.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-t.TextColor3 = Color3.new(1, 1, 1)
-
-local b_verify = Instance.new("TextButton", f)
-b_verify.Size = UDim2.new(0, 80, 0, 40)
-b_verify.Position = UDim2.new(0, 220, 0, 110)
-b_verify.Text = "ENTRAR"
-b_verify.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
-
--- LOGICA DE VALIDACAO CORRIGIDA
-b_verify.MouseButton1Click:Connect(function()
-    -- Limpa espaços, quebras de linha e caracteres invisíveis da Key
-    local cleanKey = t.Text:gsub("%s+", ""):gsub("[%c%p%s]", "")
-
-    print("Tentando validar Key: " .. cleanKey) -- Aparece no F9 para você conferir
+-- LOGICA DO BOTÃO "ENTRAR" (VALIDAÇÃO E CARREGAMENTO)
+btnEnter.MouseButton1Click:Connect(function()
+    -- Limpa espaços e caracteres especiais para evitar erro de "Key Inválida"
+    local cleanKey = input.Text:gsub("%s+", ""):gsub("[%c%p%s]", "")
 
     if PandaAuth:ValidateKey(ServiceID, cleanKey) then
         sg:Destroy()
-        -- Executa o script principal
-        local s, err = pcall(function()
-            loadstring(game:HttpGet(SCRIPT_PRINCIPAL))()
-        end)
-        if not s then warn("Erro ao carregar script principal: " .. err) end
+        -- Carrega o seu Aimbot Universal com 6 abas
+        loadstring(game:HttpGet(SCRIPT_PRINCIPAL))()
     else
-        t.Text = ""
-        t.PlaceholderText = "KEY INVALIDA OU EXPIRADA!"
-        b_verify.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+        input.Text = ""
+        input.PlaceholderText = "KEY INVÁLIDA!"
+        btnEnter.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
         task.wait(1)
-        b_verify.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+        btnEnter.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
     end
 end)
