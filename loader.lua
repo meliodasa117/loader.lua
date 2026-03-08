@@ -1,17 +1,13 @@
 local ServiceID = "ae49d069-3597-44ef-9e4e-26e87db30638" 
 local SCRIPT_PRINCIPAL = "https://raw.githubusercontent.com/meliodasa117/Sheldon/main/SheldonHub%20aimbot.lua"
 
--- Função para garantir que a API carregue
-local function CarregarAPI()
-    local s, res = pcall(function()
-        return loadstring(game:HttpGet("https://api-v2.pandadevelopment.net/v2/lib/source.lua"))()
-    end)
-    return s and res or nil
-end
+-- Carregamento Direto da API
+local PandaAuth;
+local success, err = pcall(function()
+    PandaAuth = loadstring(game:HttpGet("https://api-v2.pandadevelopment.net/v2/lib/source.lua"))()
+end)
 
-local PandaAuth = CarregarAPI()
-
--- Interface (Mantendo seu estilo aprovado)
+-- Interface Gráfica
 local sg = Instance.new("ScreenGui", game:GetService("CoreGui"))
 local f = Instance.new("Frame", sg)
 f.Size = UDim2.new(0, 300, 0, 180)
@@ -50,7 +46,7 @@ b_verify.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
 b_verify.TextColor3 = Color3.new(1, 1, 1)
 Instance.new("UICorner", b_verify)
 
--- Logica do Botão Get Key
+-- Botão Get Key
 b_copy.MouseButton1Click:Connect(function()
     local hwid = game:GetService("RbxAnalyticsService"):GetClientId()
     setclipboard("https://pandadevelopment.net/getkey/sheldonhub?hwid=" .. hwid)
@@ -59,30 +55,26 @@ b_copy.MouseButton1Click:Connect(function()
     b_copy.Text = "PEGAR KEY (LINKVERTISE)"
 end)
 
--- Verificação com Anti-Erro de API
+-- Botão Entrar
 b_verify.MouseButton1Click:Connect(function()
-    -- Se falhou ao carregar no início, tenta carregar de novo agora
-    if not PandaAuth then 
-        PandaAuth = CarregarAPI() 
+    if not success or not PandaAuth then
+        -- Tenta recarregar se falhou antes
+        success, PandaAuth = pcall(function()
+            return loadstring(game:HttpGet("https://api-v2.pandadevelopment.net/v2/lib/source.lua"))()
+        end)
     end
 
-    if not PandaAuth then
-        t.Text = ""
-        t.PlaceholderText = "ERRO DE CONEXÃO!"
-        return
-    end
-
-    local cleanKey = t.Text:gsub("%s+", "")
-
-    if PandaAuth:ValidateKey(ServiceID, cleanKey) then
-        sg:Destroy()
-        -- Carrega o seu Aimbot principal (TweenService)
-        loadstring(game:HttpGet(SCRIPT_PRINCIPAL))()
+    if success and PandaAuth then
+        local cleanKey = t.Text:gsub("%s+", "")
+        if PandaAuth:ValidateKey(ServiceID, cleanKey) then
+            sg:Destroy()
+            loadstring(game:HttpGet(SCRIPT_PRINCIPAL))()
+        else
+            t.Text = ""
+            t.PlaceholderText = "KEY INVÁLIDA!"
+        end
     else
         t.Text = ""
-        t.PlaceholderText = "KEY INVÁLIDA!"
-        b_verify.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-        task.wait(1)
-        b_verify.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+        t.PlaceholderText = "ERRO NA CONEXÃO!"
     end
 end)
